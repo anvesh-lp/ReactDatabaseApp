@@ -9,28 +9,45 @@ function App() {
     const [movies, setMovies] = useState([])
     const [error, setError] = useState(null)
     
-    function addMovieHandler(movie){
-        console.log(movie);
+    async function addMovieHandler(movie){
+        const response=await fetch("https://react-database-16425-default-rtdb.firebaseio.com/movies.json",{
+            method:"POST",
+            body:JSON.stringify(movie),
+            headers:{
+                'Content-Type':'application/json'
+            }
+        });
+
     }
 
     async function triggeringFucniton() {
-
         try {
             const response = await fetch("https://react-database-16425-default-rtdb.firebaseio.com/movies.json");
             if (!response.ok){
                 throw new Error("Invalid error")
             }
             const data = await response.json();
+            console.log(data)
+            const loadedData=[]
+            for(const key in data){
+                loadedData.push({
+                    id:key,
+                    title:data[key].title,
+                    openingText:data[key].openingText,
+                    releaseDate:data[key].releaseDate
+                })
+            }
 
-            const tranforemddata = data.results.map((moviesData) => {
+            // const loadedData=data.
+            /*const tranforemddata = data.results.map((moviesData) => {
                 return {
                     id: moviesData.episode_id,
                     title: moviesData.title,
                     openingText: moviesData.opening_crawl,
                     releaseDate: moviesData.release_date,
                 };
-            });
-            setMovies(tranforemddata)
+            });*/
+            setMovies(loadedData)
         } catch (error) {
             setError(error.message)
         }
